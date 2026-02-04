@@ -12,8 +12,9 @@
  */
 
 const CONFIG = {
-    // Gemini API Configuration
-    GEMINI_API_KEY: '', // Leave empty - users will input via UI
+    // INCOLLA QUI LA TUA CHIAVE (Non lasciarla vuota)
+    GEMINI_API_KEY: 'AIzaSyARbAqLbi2Or0y1FUq31Nr0TOkbfq1b1JI', 
+    
     GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
     
     // Application Settings
