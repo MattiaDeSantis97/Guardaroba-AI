@@ -71,6 +71,10 @@
                                         <option value="Pantaloni">Pantaloni</option>
                                         <option value="Jeans">Jeans</option>
                                         <option value="Scarpe">Scarpe</option>
+                                        <option value="Cappotto">Cappotto</option>
+                                        <option value="Gonna">Gonna</option>
+                                        <option value="Vestito">Vestito</option>
+                                        <option value="Accessori">Accessori</option>
                                     </select>
                                 </div>
                             </div>
@@ -84,6 +88,9 @@
                                         <option value="Blu">Blu</option>
                                         <option value="Rosso">Rosso</option>
                                         <option value="Verde">Verde</option>
+                                        <option value="Grigio">Grigio</option>
+                                        <option value="Giallo">Giallo</option>
+                                        <option value="Rosa">Rosa</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -92,6 +99,8 @@
                                         <option value="">Seleziona...</option>
                                         <option value="Estate">Estate</option>
                                         <option value="Inverno">Inverno</option>
+                                        <option value="Primavera">Primavera</option>
+                                        <option value="Autunno">Autunno</option>
                                         <option value="Tutto l'anno">Tutto l'anno</option>
                                     </select>
                                 </div>
@@ -111,13 +120,19 @@
                                 <option value="">Tutte le categorie</option>
                                 <option value="Maglietta">Maglietta</option>
                                 <option value="Jeans">Jeans</option>
+                                <option value="Camicia">Camicia</option>
+                                <option value="Felpa">Felpa</option>
+                                <option value="Giacca">Giacca</option>
                             </select>
                             <select id="filterColor" onchange="app.filterWardrobe()">
                                 <option value="">Tutti i colori</option>
                                 <option value="Nero">Nero</option>
+                                <option value="Bianco">Bianco</option>
                             </select>
                             <select id="filterSeason" onchange="app.filterWardrobe()">
                                 <option value="">Tutte le stagioni</option>
+                                <option value="Estate">Estate</option>
+                                <option value="Inverno">Inverno</option>
                             </select>
                         </div>
                     </div>
@@ -135,10 +150,12 @@
 
                 <section id="statsTab" class="tab-content" style="display:none;">
                     <h2>Statistiche</h2>
-                    <h3 id="totalItems">0</h3>
-                    <h3 id="totalCategories">0</h3>
-                    <h3 id="mostUsedColor">-</h3>
-                    <h3 id="seasonCoverage">-</h3>
+                    <div class="stats-container">
+                        <div class="stat-card"><h3 id="totalItems">0</h3><p>Capi</p></div>
+                        <div class="stat-card"><h3 id="totalCategories">0</h3><p>Categorie</p></div>
+                        <div class="stat-card"><h3 id="mostUsedColor">-</h3><p>Colore</p></div>
+                        <div class="stat-card"><h3 id="seasonCoverage">-</h3><p>Stagione</p></div>
+                    </div>
                     <div id="topItemsList"></div>
                 </section>
             </main>
@@ -147,8 +164,10 @@
         <footer><p>Guardaroba AI © 2026</p></footer>
     </div>
 
-    <script type="module" src="firebase-logic.js"></script>
     <script src="config.js"></script>
-    <script src="app.js"></script>
+    
+    <script src="app.js" defer></script> 
+    
+    <script type="module" src="firebase-logic.js"></script>
 </body>
 </html>
