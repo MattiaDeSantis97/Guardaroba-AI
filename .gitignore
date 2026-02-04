@@ -1,0 +1,33 @@
+# File di sistema (Mac/Windows)
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Log di errore
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log
+
+# Cartelle dell'editor di codice (VS Code, ecc.)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dipendenze Node (se mai userai npm in futuro)
+node_modules/
+
+# File di build (se mai userai un bundler)
+dist/
+build/
+
+# Firebase cache
+.firebase/
+
+# File con variabili d'ambiente (IMPORTANTE per la sicurezza)
+.env
+.env.local
+.env.*.local
