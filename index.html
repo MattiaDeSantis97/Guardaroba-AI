@@ -33,16 +33,10 @@
         <div id="app-content" style="display: none;">
             <header>
                 <div class="header-content">
-                    <h1>👗 Il Mio Guardaroba AI</h1>
+                    <h1>👗 Il Mio Guardaroba</h1>
                     <button id="btnLogout" class="btn-small">Esci</button>
                 </div>
             </header>
-
-            <div id="apiSetup" class="api-setup">
-                <h3>⚙️ Configurazione API Gemini</h3>
-                <input type="password" id="apiKeyInput" placeholder="Inserisci la tua API key di Gemini">
-                <button onclick="app.saveApiKey()" class="btn-primary">Salva API Key</button>
-            </div>
 
             <nav class="tabs">
                 <button class="tab active" onclick="app.switchTab('wardrobe')">👔 Guardaroba</button>
@@ -140,7 +134,7 @@
                     <div id="wardrobeGrid" class="wardrobe-grid"></div>
                 </section>
 
-                <section id="outfitTab" class="tab-content" style="display:none;">
+                <section id="outfitTab" class="tab-content">
                     <h2>Genera Outfit</h2>
                     <select id="occasionSelect"><option>Casual</option><option>Lavoro</option></select>
                     <textarea id="outfitNotes" placeholder="Note..."></textarea>
@@ -148,7 +142,7 @@
                     <div id="outfitResult"></div>
                 </section>
 
-                <section id="statsTab" class="tab-content" style="display:none;">
+                <section id="statsTab" class="tab-content">
                     <h2>Statistiche</h2>
                     <div class="stats-container">
                         <div class="stat-card"><h3 id="totalItems">0</h3><p>Capi</p></div>
@@ -161,7 +155,7 @@
             </main>
         </div>
         
-        <footer><p>Guardaroba AI © 2026</p></footer>
+        <footer><p>Guardaroba AI © 2026 by Mattia</p></footer>
     </div>
 
     <script src="config.js"></script>
