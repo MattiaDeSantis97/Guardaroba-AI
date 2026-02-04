@@ -15,21 +15,18 @@ const app = {
     init() {
         console.log('🎨 Initializing Wardrobe AI...');
         
-        // --- QUESTA È LA MODIFICA FONDAMENTALE ---
-        // Dice all'app: "Prendi la chiave che ho scritto in config.js!"
+        // RECUPERA LA CHIAVE DAL CONFIG
         if (typeof CONFIG !== 'undefined' && CONFIG.GEMINI_API_KEY) {
             this.apiKey = CONFIG.GEMINI_API_KEY;
         }
         
-        // Nascondiamo il box giallo perché ora è tutto automatico
+        // Nascondi box configurazione
         const apiSetup = document.getElementById('apiSetup');
         if (apiSetup) apiSetup.style.display = 'none';
-        // -----------------------------------------
         
-        // Rendiamo l'app disponibile
+        // Rendi l'app globale
         window.app = this;
         
-        // Setup UI
         this.setupEventListeners();
         
         try {
@@ -83,17 +80,8 @@ const app = {
         }
     },
     
-    // ===================================
-    // API KEY MANAGEMENT
-    // ===================================
-    
     saveApiKey() {
-        // Non serve più, ma lasciamo la funzione per evitare errori
-        const keyInput = document.getElementById('apiKeyInput');
-        if (keyInput && keyInput.value.trim()) {
-            this.apiKey = keyInput.value.trim();
-            this.showNotification('API Key salvata manualmente! ✅', 'success');
-        }
+        // Funzione legacy mantenuta per evitare errori
     },
     
     // ===================================
@@ -101,21 +89,15 @@ const app = {
     // ===================================
     
     saveWardrobe() {
-        // Salvataggio Cloud
         if (window.saveToFirebase) {
             window.saveToFirebase(this.wardrobe, this.apiKey);
         }
-        // Backup locale opzionale
         try {
             if (typeof CONFIG !== 'undefined') {
                 localStorage.setItem(CONFIG.STORAGE_KEYS.WARDROBE, JSON.stringify(this.wardrobe));
             }
         } catch (e) {}
     },
-    
-    // ===================================
-    // IMAGE HANDLING
-    // ===================================
     
     previewImage(event) {
         const file = event.target.files[0];
@@ -136,10 +118,6 @@ const app = {
         };
         reader.readAsDataURL(file);
     },
-    
-    // ===================================
-    // CLOTHING ITEM OPERATIONS
-    // ===================================
     
     addClothingItem(event) {
         if (event) event.preventDefault();
@@ -202,10 +180,6 @@ const app = {
         }
     },
     
-    // ===================================
-    // FILTERING & DISPLAY
-    // ===================================
-    
     filterWardrobe() {
         this.displayWardrobe();
     },
@@ -265,12 +239,11 @@ const app = {
     },
     
     // ===================================
-    // OUTFIT GENERATION
+    // OUTFIT GENERATION (AGGIORNATO)
     // ===================================
     
     async generateOutfit() {
-        // CONTROLLO DI SICUREZZA
-        // Se la chiave non c'è, proviamo a rileggerla da CONFIG per sicurezza
+        // Fallback per recuperare la chiave se mancante
         if (!this.apiKey && typeof CONFIG !== 'undefined') {
             this.apiKey = CONFIG.GEMINI_API_KEY;
         }
@@ -281,7 +254,7 @@ const app = {
         }
         
         const resultDiv = document.getElementById('outfitResult');
-        if (resultDiv) resultDiv.innerHTML = '<div class="loading">⏳ Generazione outfit in corso...</div>';
+        if (resultDiv) resultDiv.innerHTML = '<div class="loading">⏳ Generazione outfit in corso con Gemini Flash...</div>';
         
         try {
             const wardrobeDescription = this.wardrobe.map(item => 
@@ -310,14 +283,16 @@ Rispondi SOLO con questo JSON esatto:
                     <div class="generated-outfit" style="border-color: red;">
                         <h3>❌ Errore</h3>
                         <p>${error.message}</p>
-                        <p style="font-size:12px">Verifica di aver copiato correttamente la chiave API in config.js senza spazi extra.</p>
+                        <p style="font-size:12px">Controlla che la chiave in config.js sia corretta.</p>
                     </div>`;
             }
         }
     },
 
     async callGeminiAPI(prompt) {
-        const url = `${CONFIG.GEMINI_API_URL}?key=${this.apiKey}`;
+        // --- URL HARDCODED PER SICUREZZA ---
+        // Usiamo gemini-1.5-flash che è il modello attuale raccomandato
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
         
         const response = await fetch(url, {
             method: 'POST',
@@ -336,7 +311,6 @@ Rispondi SOLO con questo JSON esatto:
         if (!data.candidates || !data.candidates[0].content) throw new Error('Nessuna risposta generata');
         
         const text = data.candidates[0].content.parts[0].text;
-        // Pulisce il testo da eventuali markdown ```json
         const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
         return JSON.parse(jsonStr);
     },
@@ -345,7 +319,6 @@ Rispondi SOLO con questo JSON esatto:
         const resultDiv = document.getElementById('outfitResult');
         if (!resultDiv) return;
         
-        // Trova i vestiti reali
         const selectedItems = [];
         data.outfit.forEach(name => {
             const found = this.wardrobe.find(item => item.name.toLowerCase().includes(name.toLowerCase()));
@@ -364,7 +337,6 @@ Rispondi SOLO con questo JSON esatto:
                     <img src="${item.photo}" alt="${item.name}">
                     <p><strong>${item.name}</strong></p>
                 </div>`;
-            // Incrementa contatore
             this.incrementWorn(item.id);
         });
         html += `</div><div class="ai-suggestion"><p>${data.suggerimento}</p></div></div>`;
@@ -372,10 +344,6 @@ Rispondi SOLO con questo JSON esatto:
         resultDiv.innerHTML = html;
         this.saveWardrobe();
     },
-    
-    // ===================================
-    // STATISTICS
-    // ===================================
     
     updateStats() {
         const totalEl = document.getElementById('totalItems');
@@ -385,7 +353,6 @@ Rispondi SOLO con questo JSON esatto:
         const catEl = document.getElementById('totalCategories');
         if (catEl) catEl.textContent = categories.length;
         
-        // Colore più usato
         const colorCount = {};
         this.wardrobe.forEach(item => { colorCount[item.color] = (colorCount[item.color] || 0) + 1; });
         const mostUsedColor = Object.keys(colorCount).length > 0
@@ -394,7 +361,6 @@ Rispondi SOLO con questo JSON esatto:
         const colElStat = document.getElementById('mostUsedColor');
         if (colElStat) colElStat.textContent = mostUsedColor;
         
-        // Top Items
         const topItems = [...this.wardrobe].sort((a, b) => b.timesWorn - a.timesWorn).slice(0, 5);
         const topList = document.getElementById('topItemsList');
         if (topList) {
@@ -410,7 +376,6 @@ Rispondi SOLO con questo JSON esatto:
     }
 };
 
-// ESPORTAZIONE GLOBALE IMMEDIATA
 window.app = app;
 
 if (document.readyState === 'loading') {
