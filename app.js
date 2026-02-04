@@ -15,17 +15,22 @@ const app = {
     init() {
         console.log('🎨 Initializing Wardrobe AI...');
         
-        // 1. Rendiamo l'app disponibile SUBITO
-        window.app = this;
+        // --- MODIFICA QUI ---
+        // Prende la chiave direttamente dal config
+        this.apiKey = CONFIG.GEMINI_API_KEY; 
         
-        // Setup UI
+        // Nascondiamo il box di inserimento chiave perché non serve più
+        const apiSetup = document.getElementById('apiSetup');
+        if (apiSetup) apiSetup.style.display = 'none';
+        // --------------------
+
+        window.app = this;
         this.setupEventListeners();
         
-        // Proviamo a mostrare il guardaroba, ma senza far crashare tutto se fallisce
         try {
             this.displayWardrobe();
         } catch (e) {
-            console.warn("Display wardrobe inizliale saltato (elementi non pronti):", e);
+            console.warn("Display wardrobe saltato:", e);
         }
         
         this.updateStats();
