@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gestisci il tuo guardaroba e crea outfit perfetti con l'AI">
+    <title>Il Mio Guardaroba AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="auth-section" class="auth-container">
+            <header>
+                <h1>👗 Guardaroba AI</h1>
+                <p>Accedi per gestire il tuo guardaroba</p>
+            </header>
+            
+            <div class="auth-box">
+                <input type="email" id="emailInput" placeholder="Email" class="auth-input">
+                <input type="password" id="passwordInput" placeholder="Password" class="auth-input">
+                
+                <div class="auth-buttons">
+                    <button id="btnLogin" class="btn-primary">Accedi</button>
+                    <button id="btnRegister" class="btn-secondary">Registrati</button>
+                </div>
+                
+                <div class="divider">oppure</div>
+                
+                <button id="btnGoogle" class="google-btn">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18">
+                    Accedi con Google
+                </button>
+                <p id="authError" class="error-msg"></p>
+            </div>
+        </div>
+
+        <div id="app-content" style="display: none;">
+            <header>
+                <div class="header-content">
+                    <h1>👗 Il Mio Guardaroba AI</h1>
+                    <button id="btnLogout" class="btn-small">Esci</button>
+                </div>
+            </header>
+
+            </div>
+    </div>
+
+    <script type="module" src="firebase-logic.js"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script> 
+
+        <footer>
+            <p>Made by Mattia - Guardaroba AI © 2026</p>
+        </footer>
+    </div>
+</body>
+</html>
