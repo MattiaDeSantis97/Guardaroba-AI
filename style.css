@@ -66,3 +66,8 @@ footer { text-align: center; margin-top: 40px; color: #666; font-size: 0.9em; bo
 .outfit-items { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin: 15px 0; }
 .outfit-item img { width: 100%; height: 120px; object-fit: cover; border-radius: 5px; }
 .ai-suggestion { background: #e7f3ff; padding: 15px; border-radius: 5px; margin-top: 15px; border-left: 4px solid #667eea; }
+
+/* Nascondi configurazione API perché è automatica */
+#apiSetup {
+    display: none !important;
+}
