@@ -15,7 +15,7 @@ const CONFIG = {
     // INCOLLA QUI LA TUA CHIAVE (Non lasciarla vuota)
     GEMINI_API_KEY: 'AIzaSyB3plk6eHzxUow9ie4KLFXUp7d-jTrt7BE', 
     
-    GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+    GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent',
     
     // Application Settings
     APP_NAME: 'Il Mio Guardaroba AI',
