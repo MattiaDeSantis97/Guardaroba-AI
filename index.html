@@ -46,45 +46,36 @@
             <div id="apiSetup" class="api-setup">
                 <h3>⚙️ Configurazione API Gemini</h3>
                 <p>Inserisci la tua API key di Gemini per attivare la generazione outfit AI</p>
-                <p class="api-help">
-                    Ottieni la tua chiave gratuita su: 
-                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">
-                        https://aistudio.google.com/app/apikey
-                    </a>
-                </p>
-                <input type="password" id="apiKeyInput" placeholder="Inserisci la tua API key di Gemini" aria-label="API Key">
+                <input type="password" id="apiKeyInput" placeholder="Inserisci la tua API key di Gemini">
                 <button onclick="app.saveApiKey()" class="btn-primary">Salva API Key</button>
             </div>
 
             <nav class="tabs" role="tablist">
-                <button class="tab active" role="tab" aria-selected="true" aria-controls="wardrobeTab" onclick="app.switchTab('wardrobe')">
-                    <span class="tab-icon">👔</span>
-                    <span class="tab-text">Guardaroba</span>
+                <button class="tab active" onclick="app.switchTab('wardrobe')">
+                    <span class="tab-icon">👔</span> Guardaroba
                 </button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="outfitTab" onclick="app.switchTab('outfit')">
-                    <span class="tab-icon">✨</span>
-                    <span class="tab-text">Crea Outfit</span>
+                <button class="tab" onclick="app.switchTab('outfit')">
+                    <span class="tab-icon">✨</span> Crea Outfit
                 </button>
-                <button class="tab" role="tab" aria-selected="false" aria-controls="statsTab" onclick="app.switchTab('stats')">
-                    <span class="tab-icon">📊</span>
-                    <span class="tab-text">Statistiche</span>
+                <button class="tab" onclick="app.switchTab('stats')">
+                    <span class="tab-icon">📊</span> Statistiche
                 </button>
             </nav>
 
             <main>
-                <section id="wardrobeTab" class="tab-content active" role="tabpanel">
+                <section id="wardrobeTab" class="tab-content active">
                     <div class="add-item-form">
                         <h2>Aggiungi Vestito</h2>
                         <form id="addItemForm" onsubmit="app.addClothingItem(event)">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="itemName">Nome *</label>
+                                    <label>Nome *</label>
                                     <input type="text" id="itemName" required placeholder="Es: Jeans blu">
                                 </div>
                                 <div class="form-group">
-                                    <label for="itemCategory">Categoria *</label>
+                                    <label>Categoria *</label>
                                     <select id="itemCategory" required>
-                                        <option value="">Seleziona categoria</option>
+                                        <option value="">Seleziona...</option>
                                         <option value="Maglietta">Maglietta</option>
                                         <option value="Camicia">Camicia</option>
                                         <option value="Felpa">Felpa</option>
@@ -99,12 +90,11 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="itemColor">Colore *</label>
+                                    <label>Colore *</label>
                                     <select id="itemColor" required>
-                                        <option value="">Seleziona colore</option>
+                                        <option value="">Seleziona...</option>
                                         <option value="Nero">Nero</option>
                                         <option value="Bianco">Bianco</option>
                                         <option value="Grigio">Grigio</option>
@@ -120,9 +110,9 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="itemSeason">Stagione *</label>
+                                    <label>Stagione *</label>
                                     <select id="itemSeason" required>
-                                        <option value="">Seleziona stagione</option>
+                                        <option value="">Seleziona...</option>
                                         <option value="Primavera">Primavera</option>
                                         <option value="Estate">Estate</option>
                                         <option value="Autunno">Autunno</option>
@@ -131,18 +121,14 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div class="form-group">
-                                <label for="itemPhoto">Foto</label>
+                                <label>Foto</label>
                                 <div class="file-input-wrapper">
                                     <input type="file" id="itemPhoto" accept="image/*" onchange="app.previewImage(event)">
-                                    <label for="itemPhoto" class="file-input-label">
-                                        📷 Carica Foto
-                                    </label>
+                                    <label for="itemPhoto" class="file-input-label">📷 Carica Foto</label>
                                 </div>
-                                <img id="imagePreview" class="image-preview" style="display:none;" alt="Anteprima foto">
+                                <img id="imagePreview" class="image-preview" style="display:none;" alt="Anteprima">
                             </div>
-
                             <button type="submit" class="btn-primary btn-large">Aggiungi al Guardaroba</button>
                         </form>
                     </div>
@@ -150,120 +136,52 @@
                     <div class="filters">
                         <h3>Filtra Vestiti</h3>
                         <div class="filter-row">
-                            <div class="form-group">
-                                <label for="filterCategory">Categoria</label>
-                                <select id="filterCategory" onchange="app.filterWardrobe()">
-                                    <option value="">Tutte</option>
-                                    <option value="Maglietta">Maglietta</option>
-                                    <option value="Camicia">Camicia</option>
-                                    <option value="Felpa">Felpa</option>
-                                    <option value="Giacca">Giacca</option>
-                                    <option value="Cappotto">Cappotto</option>
-                                    <option value="Pantaloni">Pantaloni</option>
-                                    <option value="Jeans">Jeans</option>
-                                    <option value="Gonna">Gonna</option>
-                                    <option value="Vestito">Vestito</option>
-                                    <option value="Scarpe">Scarpe</option>
-                                    <option value="Accessori">Accessori</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="filterColor">Colore</label>
-                                <select id="filterColor" onchange="app.filterWardrobe()">
-                                    <option value="">Tutti</option>
-                                    <option value="Nero">Nero</option>
-                                    <option value="Bianco">Bianco</option>
-                                    <option value="Grigio">Grigio</option>
-                                    <option value="Blu">Blu</option>
-                                    <option value="Rosso">Rosso</option>
-                                    <option value="Verde">Verde</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="filterSeason">Stagione</label>
-                                <select id="filterSeason" onchange="app.filterWardrobe()">
-                                    <option value="">Tutte</option>
-                                    <option value="Primavera">Primavera</option>
-                                    <option value="Estate">Estate</option>
-                                    <option value="Autunno">Autunno</option>
-                                    <option value="Inverno">Inverno</option>
-                                    <option value="Tutto l'anno">Tutto l'anno</option>
-                                </select>
-                            </div>
+                            <select id="filterCategory" onchange="app.filterWardrobe()"><option value="">Tutte le categorie</option><option value="Maglietta">Maglietta</option><option value="Camicia">Camicia</option><option value="Felpa">Felpa</option><option value="Giacca">Giacca</option><option value="Pantaloni">Pantaloni</option><option value="Jeans">Jeans</option><option value="Scarpe">Scarpe</option></select>
+                            <select id="filterColor" onchange="app.filterWardrobe()"><option value="">Tutti i colori</option><option value="Nero">Nero</option><option value="Bianco">Bianco</option><option value="Blu">Blu</option></select>
+                            <select id="filterSeason" onchange="app.filterWardrobe()"><option value="">Tutte le stagioni</option><option value="Estate">Estate</option><option value="Inverno">Inverno</option></select>
                         </div>
                     </div>
 
                     <div id="wardrobeGrid" class="wardrobe-grid"></div>
                 </section>
 
-                <section id="outfitTab" class="tab-content" role="tabpanel">
+                <section id="outfitTab" class="tab-content">
                     <div class="outfit-generator">
                         <h2>Genera Outfit con AI</h2>
-                        
                         <div class="form-group">
-                            <label for="occasionSelect">Occasione *</label>
+                            <label>Occasione</label>
                             <select id="occasionSelect">
                                 <option value="Casual quotidiano">Casual quotidiano</option>
                                 <option value="Ufficio/Lavoro">Ufficio/Lavoro</option>
-                                <option value="Aperitivo con amici">Aperitivo con amici</option>
                                 <option value="Cena elegante">Cena elegante</option>
                                 <option value="Sport/Palestra">Sport/Palestra</option>
-                                <option value="Festa/Evento serale">Festa/Evento serale</option>
-                                <option value="Weekend relax">Weekend relax</option>
-                                <option value="Appuntamento romantico">Appuntamento romantico</option>
-                                <option value="Viaggio">Viaggio</option>
-                                <option value="Cerimonia formale">Cerimonia formale</option>
+                                <option value="Festa">Festa</option>
                             </select>
                         </div>
-
                         <div class="form-group">
-                            <label for="outfitNotes">Note aggiuntive (opzionale)</label>
-                            <textarea id="outfitNotes" rows="3" placeholder="Es: Preferisco colori scuri, deve essere comodo..."></textarea>
+                            <label>Note (opzionale)</label>
+                            <textarea id="outfitNotes" rows="3" placeholder="Es: Preferisco colori scuri..."></textarea>
                         </div>
-
-                        <button onclick="app.generateOutfit()" class="btn-primary btn-large">
-                            ✨ Genera Outfit
-                        </button>
-
+                        <button onclick="app.generateOutfit()" class="btn-primary btn-large">✨ Genera Outfit</button>
                         <div id="outfitResult"></div>
                     </div>
                 </section>
 
-                <section id="statsTab" class="tab-content" role="tabpanel">
-                    <h2>📊 Statistiche Guardaroba</h2>
+                <section id="statsTab" class="tab-content">
+                    <h2>📊 Statistiche</h2>
                     <div class="stats-container">
-                        <div class="stat-card">
-                            <h3 id="totalItems">0</h3>
-                            <p>Capi Totali</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3 id="totalCategories">0</h3>
-                            <p>Categorie</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3 id="mostUsedColor">-</h3>
-                            <p>Colore più usato</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3 id="seasonCoverage">-</h3>
-                            <p>Stagione dominante</p>
-                        </div>
+                        <div class="stat-card"><h3 id="totalItems">0</h3><p>Capi Totali</p></div>
+                        <div class="stat-card"><h3 id="totalCategories">0</h3><p>Categorie</p></div>
+                        <div class="stat-card"><h3 id="mostUsedColor">-</h3><p>Colore Top</p></div>
+                        <div class="stat-card"><h3 id="seasonCoverage">-</h3><p>Stagione Top</p></div>
                     </div>
-
-                    <div class="top-items">
-                        <h3>👕 Capi più indossati</h3>
-                        <div id="topItemsList"></div>
-                    </div>
+                    <div class="top-items"><h3>👕 Capi più indossati</h3><div id="topItemsList"></div></div>
                 </section>
             </main>
-        </div>
-
-        <footer>
+        </div> <footer>
             <p>Made by Mattia - Guardaroba AI © 2026</p>
         </footer>
-    </div>
-
-    <script type="module" src="firebase-logic.js"></script>
+    </div> <script type="module" src="firebase-logic.js"></script>
     <script src="config.js"></script>
     <script src="app.js"></script> 
 </body>
