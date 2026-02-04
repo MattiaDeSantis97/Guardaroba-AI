@@ -33,7 +33,7 @@
         <div id="app-content" style="display: none;">
             <header>
                 <div class="header-content">
-                    <h1>👗 Il Mio Guardaroba</h1>
+                    <h1>👗 Il Mio Guardaroba AI</h1>
                     <button id="btnLogout" class="btn-small">Esci</button>
                 </div>
             </header>
@@ -52,7 +52,7 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Nome</label>
-                                    <input type="text" id="itemName" required>
+                                    <input type="text" id="itemName" required placeholder="Es. Jeans Blu">
                                 </div>
                                 <div class="form-group">
                                     <label>Categoria</label>
@@ -135,11 +135,25 @@
                 </section>
 
                 <section id="outfitTab" class="tab-content">
-                    <h2>Genera Outfit</h2>
-                    <select id="occasionSelect"><option>Casual</option><option>Lavoro</option></select>
-                    <textarea id="outfitNotes" placeholder="Note..."></textarea>
-                    <button onclick="app.generateOutfit()" class="btn-primary">Genera</button>
-                    <div id="outfitResult"></div>
+                    <div class="outfit-generator">
+                        <h2>Genera Outfit</h2>
+                        <div class="form-group">
+                            <label>Occasione</label>
+                            <select id="occasionSelect">
+                                <option value="Casual quotidiano">Casual quotidiano</option>
+                                <option value="Ufficio/Lavoro">Ufficio/Lavoro</option>
+                                <option value="Cena elegante">Cena elegante</option>
+                                <option value="Sport/Palestra">Sport/Palestra</option>
+                                <option value="Festa">Festa</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Note (opzionale)</label>
+                            <textarea id="outfitNotes" rows="3" placeholder="Es: Preferisco colori scuri..."></textarea>
+                        </div>
+                        <button onclick="app.generateOutfit()" class="btn-primary">✨ Genera Outfit</button>
+                        <div id="outfitResult"></div>
+                    </div>
                 </section>
 
                 <section id="statsTab" class="tab-content">
@@ -155,13 +169,13 @@
             </main>
         </div>
         
-        <footer><p>Guardaroba AI © 2026 by Mattia</p></footer>
+        <footer><p>Guardaroba AI © 2026 by Mattya</p></footer>
     </div>
 
     <script src="config.js"></script>
-    
+
     <script src="app.js" defer></script> 
-    
+
     <script type="module" src="firebase-logic.js"></script>
 </body>
 </html>
