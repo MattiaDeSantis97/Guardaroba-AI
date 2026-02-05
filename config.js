@@ -16,7 +16,7 @@ const CONFIG = {
     GEMINI_API_KEY: 'AIzaSyDbRafEjXwJM10u3pkRdO_SDWy69bcCFvY', 
     
     // MODIFICA: Usiamo 'gemini-pro' che è il modello standard e funziona sempre
-    GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+    GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
     
     // Application Settings
     APP_NAME: 'Il Mio Guardaroba AI',
