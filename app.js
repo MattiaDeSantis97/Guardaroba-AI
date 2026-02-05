@@ -1,5 +1,5 @@
 // ===================================
-// MAIN APPLICATION - VERSIONE INTELLIGENTE
+// MAIN APPLICATION - VERSIONE GEMINI 2.5
 // ===================================
 
 const app = {
@@ -9,12 +9,9 @@ const app = {
     init() {
         console.log('🎨 Initializing Wardrobe AI...');
         
-        // 1. RECUPERA E PULISCE LA CHIAVE
+        // 1. RECUPERA LA CHIAVE DAL CONFIG
         if (typeof CONFIG !== 'undefined' && CONFIG.GEMINI_API_KEY) {
-            // .trim() rimuove spazi vuoti accidentali all'inizio o alla fine
-            this.apiKey = CONFIG.GEMINI_API_KEY.trim();
-            // Rimuove eventuali virgolette extra se le hai copiate per sbaglio
-            this.apiKey = this.apiKey.replace(/['"]/g, '');
+            this.apiKey = CONFIG.GEMINI_API_KEY.trim().replace(/['"]/g, '');
         }
         
         // Nascondi box configurazione
@@ -25,9 +22,6 @@ const app = {
         this.setupEventListeners();
         try { this.displayWardrobe(); } catch (e) {}
         this.updateStats();
-        
-        // Avviso silenzioso in console
-        console.log("App pronta con chiave (ultimi 4 car):", this.apiKey.slice(-4));
     },
     
     async generateOutfit() {
@@ -36,13 +30,13 @@ const app = {
             this.apiKey = CONFIG.GEMINI_API_KEY.trim().replace(/['"]/g, '');
         }
 
-        if (!this.apiKey || this.apiKey.length < 20) {
-            alert('Errore: La API Key in config.js sembra non valida o troppo corta.');
+        if (!this.apiKey) {
+            alert('Errore: API Key mancante in config.js');
             return;
         }
         
         const resultDiv = document.getElementById('outfitResult');
-        if (resultDiv) resultDiv.innerHTML = '<div class="loading">⏳ Sto cercando il modello giusto...</div>';
+        if (resultDiv) resultDiv.innerHTML = '<div class="loading">⏳ Generazione outfit con Gemini 2.5...</div>';
         
         try {
             const wardrobeDesc = this.wardrobe.map(i => `${i.name} (${i.category}, ${i.color})`).join(', ');
@@ -57,62 +51,38 @@ const app = {
             
         } catch (error) {
             console.error(error);
-            if (resultDiv) resultDiv.innerHTML = `<div class="generated-outfit" style="border-color:red"><h3>❌ Errore AI</h3><p>${error.message}</p><p style="font-size:12px">Verifica che la tua API Key su Google AI Studio sia attiva.</p></div>`;
+            if (resultDiv) resultDiv.innerHTML = `<div class="generated-outfit" style="border-color:red"><h3>❌ Errore</h3><p>${error.message}</p></div>`;
         }
     },
 
     async callGeminiAPI(prompt) {
-        // LISTA DI MODELLI DA PROVARE (Se uno fallisce, proviamo l'altro)
-        // Usiamo le versioni specifiche "-001" che sono più stabili degli alias
-        const modelsToTry = [
-            'gemini-1.5-flash-001', // Più veloce e recente
-            'gemini-1.5-flash',     // Alias standard
-            'gemini-pro'            // Vecchio ma affidabile
-        ];
+        // --- QUI C'ERA IL PROBLEMA: ORA USIAMO IL MODELLO CHE HAI TROVATO TU ---
+        // Usiamo esattamente 'gemini-2.5-flash' come confermato dal tuo test
+        const modelName = 'gemini-2.5-flash'; 
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${this.apiKey}`;
+        
+        console.log(`Chiamata a: ${modelName}`);
 
-        let lastError = null;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
 
-        for (const model of modelsToTry) {
-            try {
-                console.log(`Tentativo con modello: ${model}...`);
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`;
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
+        const data = await response.json();
 
-                const data = await response.json();
-
-                if (!response.ok) {
-                    // Se l'errore è "Not Found", proviamo il prossimo modello
-                    if (data.error && data.error.code === 404) {
-                        console.warn(`Modello ${model} non trovato, passo al prossimo...`);
-                        lastError = data.error.message;
-                        continue; 
-                    }
-                    throw new Error(data.error?.message || 'Errore Google API');
-                }
-
-                if (!data.candidates || !data.candidates[0].content) throw new Error('Nessuna risposta generata');
-
-                const text = data.candidates[0].content.parts[0].text;
-                const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
-                return JSON.parse(jsonStr);
-
-            } catch (e) {
-                lastError = e.message;
-                // Se non è un 404, è un errore serio (es. chiave scaduta), quindi ci fermiamo
-                if (!e.message.includes("not found")) throw e;
-            }
+        if (!response.ok) {
+            throw new Error(data.error?.message || 'Errore Google API');
         }
 
-        // Se siamo qui, tutti i modelli hanno fallito
-        throw new Error(`Nessun modello disponibile per questa API Key. Ultimo errore: ${lastError}`);
+        if (!data.candidates || !data.candidates[0].content) throw new Error('Nessuna risposta generata');
+
+        const text = data.candidates[0].content.parts[0].text;
+        const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(jsonStr);
     },
 
-    // --- FUNZIONI DI SUPPORTO (Non modificate) ---
+    // --- FUNZIONI STANDARD ---
     setupEventListeners() { document.querySelectorAll('input[type="text"]').forEach(i => i.addEventListener('keypress', e => { if (e.key === 'Enter') e.preventDefault(); })); },
     switchTab(t) { document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); event?.target.closest('.tab').classList.add('active'); document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active')); document.getElementById(t+'Tab').classList.add('active'); this.currentTab=t; if(t==='stats')this.updateStats(); },
     saveApiKey() {},
