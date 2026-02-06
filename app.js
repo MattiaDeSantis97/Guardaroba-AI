@@ -56,22 +56,46 @@ const app = {
     },
 
     async callGeminiAPI(prompt) {
-        // Usiamo il percorso relativo. Vercel capirà automaticamente che deve chiamare il file nella cartella /api
         const proxyUrl = '/api/proxy'; 
-        
         console.log('Chiamata sicura via Vercel...');
 
-        const response = await fetch(proxyUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: prompt })
-        });
+        try {
+            const response = await fetch(proxyUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: prompt })
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.error?.message || 'Errore Server Vercel');
+            // 1. GESTIONE ERRORI MIGLIORATA
+            if (data.error) {
+                // Se l'errore è un oggetto (es. da Google), prendiamo il messaggio interno
+                // Se è una stringa semplice, usiamo quella
+                // Se tutto fallisce, convertiamo l'oggetto in testo per leggerlo
+                let errorMsg;
+                if (typeof data.error === 'object') {
+                    errorMsg = data.error.message || JSON.stringify(data.error);
+                } else {
+                    errorMsg = data.error;
+                }
+                throw new Error(errorMsg);
+            }
+
+            // 2. CONTROLLO RISPOSTA VALIDA
+            if (!data.candidates || !data.candidates[0].content) {
+                throw new Error('Nessuna risposta generata dall\'AI');
+            }
+
+            const text = data.candidates[0].content.parts[0].text;
+            const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+            return JSON.parse(jsonStr);
+
+        } catch (error) {
+            console.error("Errore dettagliato:", error);
+            throw new Error(error.message || "Errore sconosciuto durante la generazione");
         }
+    },
 
         // Se la chiamata fallisce lato server o non ci sono candidati
         if (data.error) throw new Error(data.error);
