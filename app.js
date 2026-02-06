@@ -25,27 +25,27 @@ const app = {
     },
     
     async generateOutfit() {
-        // Fallback rilettura chiave
-        if (!this.apiKey && typeof CONFIG !== 'undefined') {
-            this.apiKey = CONFIG.GEMINI_API_KEY.trim().replace(/['"]/g, '');
-        }
-
-        if (!this.apiKey) {
-            alert('Errore: API Key mancante in config.js');
-            return;
-        }
+        // --- MODIFICA: RIMOSSO IL CONTROLLO API KEY ---
+        // Non serve più controllare this.apiKey perché la chiave è sul server Vercel.
         
         const resultDiv = document.getElementById('outfitResult');
-        if (resultDiv) resultDiv.innerHTML = '<div class="loading">⏳ Generazione outfit con Gemini 2.5...</div>';
+        if (resultDiv) resultDiv.innerHTML = '<div class="loading">⏳ Generazione outfit in corso...</div>';
         
         try {
+            // Preparazione dati
             const wardrobeDesc = this.wardrobe.map(i => `${i.name} (${i.category}, ${i.color})`).join(', ');
+            
+            // Controllo sicurezza: se il guardaroba è vuoto
+            if (this.wardrobe.length === 0) {
+                throw new Error("Il guardaroba è vuoto! Aggiungi qualche vestito prima.");
+            }
+
             const occasion = document.getElementById('occasionSelect').value;
             const notes = document.getElementById('outfitNotes').value;
 
             const prompt = `Sei un esperto di moda. Ho: ${wardrobeDesc}. Occasione: ${occasion}. Note: ${notes}. Crea un outfit. Rispondi SOLO JSON: {"outfit": ["capo1", "capo2"], "suggerimento": "testo"}`;
             
-            // CHIAMATA API
+            // CHIAMATA AL PROXY (La funzione callGeminiAPI che hai modificato prima)
             const response = await this.callGeminiAPI(prompt);
             this.displayGeneratedOutfit(response);
             
