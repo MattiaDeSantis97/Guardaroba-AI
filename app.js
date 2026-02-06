@@ -1,22 +1,17 @@
 // ===================================
-// MAIN APPLICATION - VERSIONE GEMINI 2.5
+// MAIN APPLICATION - VERSIONE VERCEL PROXY
 // ===================================
 
 const app = {
     wardrobe: [],
-    apiKey: '',
+    // apiKey rimossa per sicurezza (gestita da Vercel)
     
     init() {
         console.log('🎨 Initializing Wardrobe AI...');
         
-        // 1. RECUPERA LA CHIAVE DAL CONFIG
-        if (typeof CONFIG !== 'undefined' && CONFIG.GEMINI_API_KEY) {
-            this.apiKey = CONFIG.GEMINI_API_KEY.trim().replace(/['"]/g, '');
-        }
-        
-        // Nascondi box configurazione
+        // Nascondi box configurazione se esiste
         const apiSetup = document.getElementById('apiSetup');
-        if (this.apiKey && apiSetup) apiSetup.style.display = 'none';
+        if (apiSetup) apiSetup.style.display = 'none';
         
         window.app = this;
         this.setupEventListeners();
@@ -25,27 +20,22 @@ const app = {
     },
     
     async generateOutfit() {
-        // --- MODIFICA: RIMOSSO IL CONTROLLO API KEY ---
-        // Non serve più controllare this.apiKey perché la chiave è sul server Vercel.
-        
         const resultDiv = document.getElementById('outfitResult');
         if (resultDiv) resultDiv.innerHTML = '<div class="loading">⏳ Generazione outfit in corso...</div>';
         
         try {
-            // Preparazione dati
-            const wardrobeDesc = this.wardrobe.map(i => `${i.name} (${i.category}, ${i.color})`).join(', ');
-            
-            // Controllo sicurezza: se il guardaroba è vuoto
+            // Controllo se il guardaroba è vuoto
             if (this.wardrobe.length === 0) {
                 throw new Error("Il guardaroba è vuoto! Aggiungi qualche vestito prima.");
             }
 
+            const wardrobeDesc = this.wardrobe.map(i => `${i.name} (${i.category}, ${i.color})`).join(', ');
             const occasion = document.getElementById('occasionSelect').value;
             const notes = document.getElementById('outfitNotes').value;
 
             const prompt = `Sei un esperto di moda. Ho: ${wardrobeDesc}. Occasione: ${occasion}. Note: ${notes}. Crea un outfit. Rispondi SOLO JSON: {"outfit": ["capo1", "capo2"], "suggerimento": "testo"}`;
             
-            // CHIAMATA AL PROXY (La funzione callGeminiAPI che hai modificato prima)
+            // CHIAMATA AL PROXY VERCEL
             const response = await this.callGeminiAPI(prompt);
             this.displayGeneratedOutfit(response);
             
@@ -56,6 +46,7 @@ const app = {
     },
 
     async callGeminiAPI(prompt) {
+        // Usa il proxy Vercel
         const proxyUrl = '/api/proxy'; 
         console.log('Chiamata sicura via Vercel...');
 
@@ -68,11 +59,8 @@ const app = {
 
             const data = await response.json();
 
-            // 1. GESTIONE ERRORI MIGLIORATA
+            // 1. GESTIONE ERRORI MIGLIORATA (Fix per [object Object])
             if (data.error) {
-                // Se l'errore è un oggetto (es. da Google), prendiamo il messaggio interno
-                // Se è una stringa semplice, usiamo quella
-                // Se tutto fallisce, convertiamo l'oggetto in testo per leggerlo
                 let errorMsg;
                 if (typeof data.error === 'object') {
                     errorMsg = data.error.message || JSON.stringify(data.error);
@@ -82,7 +70,10 @@ const app = {
                 throw new Error(errorMsg);
             }
 
-            // 2. CONTROLLO RISPOSTA VALIDA
+            if (!response.ok) {
+                throw new Error(data.error?.message || 'Errore Server Vercel');
+            }
+
             if (!data.candidates || !data.candidates[0].content) {
                 throw new Error('Nessuna risposta generata dall\'AI');
             }
@@ -92,35 +83,110 @@ const app = {
             return JSON.parse(jsonStr);
 
         } catch (error) {
-            console.error("Errore dettagliato:", error);
-            throw new Error(error.message || "Errore sconosciuto durante la generazione");
+            console.error("Errore API:", error);
+            throw new Error(error.message || "Errore di connessione");
         }
     },
 
-        // Se la chiamata fallisce lato server o non ci sono candidati
-        if (data.error) throw new Error(data.error);
-        if (!data.candidates || !data.candidates[0].content) throw new Error('Nessuna risposta generata');
-
-        const text = data.candidates[0].content.parts[0].text;
-        const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
-        return JSON.parse(jsonStr);
-    },
-
     // --- FUNZIONI STANDARD ---
-    setupEventListeners() { document.querySelectorAll('input[type="text"]').forEach(i => i.addEventListener('keypress', e => { if (e.key === 'Enter') e.preventDefault(); })); },
-    switchTab(t) { document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); event?.target.closest('.tab').classList.add('active'); document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active')); document.getElementById(t+'Tab').classList.add('active'); this.currentTab=t; if(t==='stats')this.updateStats(); },
-    saveApiKey() {},
-    saveWardrobe() { if(window.saveToFirebase)window.saveToFirebase(this.wardrobe,this.apiKey); try{if(typeof CONFIG!=='undefined')localStorage.setItem(CONFIG.STORAGE_KEYS.WARDROBE,JSON.stringify(this.wardrobe));}catch(e){} },
-    previewImage(e) { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{const p=document.getElementById('imagePreview');if(p){p.src=ev.target.result;p.style.display='block';}}; r.readAsDataURL(f); },
-    addClothingItem(e) { if(e)e.preventDefault(); const n=document.getElementById('itemName').value, c=document.getElementById('itemCategory').value; if(!n||!c)return; 
-    this.wardrobe.push({id:Date.now(),name:n,category:c,color:document.getElementById('itemColor').value,season:document.getElementById('itemSeason').value,photo:document.getElementById('imagePreview')?.src||'',timesWorn:0,favorite:false});
-    this.saveWardrobe(); this.displayWardrobe(); this.updateStats(); document.getElementById('addItemForm').reset(); alert('Aggiunto!'); },
-    deleteItem(id) { if(confirm('Eliminare?')){this.wardrobe=this.wardrobe.filter(i=>i.id!==id);this.saveWardrobe();this.displayWardrobe();this.updateStats();} },
-    toggleFavorite(id) { const i=this.wardrobe.find(x=>x.id===id); if(i){i.favorite=!i.favorite;this.saveWardrobe();this.displayWardrobe();} },
+    setupEventListeners() { 
+        document.querySelectorAll('input[type="text"]').forEach(i => i.addEventListener('keypress', e => { if (e.key === 'Enter') e.preventDefault(); })); 
+    },
+    
+    switchTab(t) { 
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); 
+        if(event && event.target) event.target.closest('.tab').classList.add('active'); 
+        document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active')); 
+        const targetTab = document.getElementById(t+'Tab');
+        if(targetTab) targetTab.classList.add('active'); 
+        this.currentTab=t; 
+        if(t==='stats') this.updateStats(); 
+    },
+    
+    saveApiKey() {}, // Non serve più
+    
+    saveWardrobe() { 
+        if(window.saveToFirebase) window.saveToFirebase(this.wardrobe, ''); 
+        try {
+            if(typeof CONFIG!=='undefined') localStorage.setItem(CONFIG.STORAGE_KEYS.WARDROBE, JSON.stringify(this.wardrobe));
+        } catch(e){} 
+    },
+    
+    previewImage(e) { 
+        const f=e.target.files[0]; 
+        if(!f) return; 
+        const r=new FileReader(); 
+        r.onload=ev=>{
+            const p=document.getElementById('imagePreview');
+            if(p){
+                p.src=ev.target.result;
+                p.style.display='block';
+            }
+        }; 
+        r.readAsDataURL(f); 
+    },
+    
+    addClothingItem(e) { 
+        if(e) e.preventDefault(); 
+        const n=document.getElementById('itemName').value, c=document.getElementById('itemCategory').value; 
+        if(!n||!c) return; 
+        
+        this.wardrobe.push({
+            id: Date.now(),
+            name: n,
+            category: c,
+            color: document.getElementById('itemColor').value,
+            season: document.getElementById('itemSeason').value,
+            photo: document.getElementById('imagePreview')?.src||'',
+            timesWorn: 0,
+            favorite: false
+        });
+        
+        this.saveWardrobe(); 
+        this.displayWardrobe(); 
+        this.updateStats(); 
+        document.getElementById('addItemForm').reset(); 
+        const p = document.getElementById('imagePreview');
+        if(p) { p.src=''; p.style.display='none'; }
+        alert('Aggiunto!'); 
+    },
+    
+    deleteItem(id) { 
+        if(confirm('Eliminare?')){
+            this.wardrobe=this.wardrobe.filter(i=>i.id!==id);
+            this.saveWardrobe();
+            this.displayWardrobe();
+            this.updateStats();
+        } 
+    },
+    
+    toggleFavorite(id) { 
+        const i=this.wardrobe.find(x=>x.id===id); 
+        if(i){
+            i.favorite=!i.favorite;
+            this.saveWardrobe();
+            this.displayWardrobe();
+        } 
+    },
+    
     filterWardrobe() { this.displayWardrobe(); },
-    displayWardrobe() { const g=document.getElementById('wardrobeGrid'); if(!g)return; g.innerHTML=this.wardrobe.map(i=>`<div class="clothing-item"><img src="${i.photo}"><h3>${i.name}</h3><button class="delete-btn" onclick="app.deleteItem(${i.id})">🗑️</button></div>`).join('')||'<p>Vuoto</p>'; },
-    displayGeneratedOutfit(d) { const r=document.getElementById('outfitResult'); if(!r)return; r.innerHTML=`<div class="generated-outfit"><h3>✨ Outfit</h3><p>${d.suggerimento}</p><p>Capi: ${d.outfit.join(', ')}</p></div>`; },
-    updateStats() { const t=document.getElementById('totalItems'); if(t)t.textContent=this.wardrobe.length; }
+    
+    displayWardrobe() { 
+        const g=document.getElementById('wardrobeGrid'); 
+        if(!g) return; 
+        g.innerHTML=this.wardrobe.map(i=>`<div class="clothing-item"><img src="${i.photo}"><h3>${i.name}</h3><button class="delete-btn" onclick="app.deleteItem(${i.id})">🗑️</button></div>`).join('')||'<p>Vuoto</p>'; 
+    },
+    
+    displayGeneratedOutfit(d) { 
+        const r=document.getElementById('outfitResult'); 
+        if(!r) return; 
+        r.innerHTML=`<div class="generated-outfit"><h3>✨ Outfit Suggerito</h3><p>${d.suggerimento}</p><p><strong>Capi da indossare:</strong> ${d.outfit.join(', ')}</p></div>`; 
+    },
+    
+    updateStats() { 
+        const t=document.getElementById('totalItems'); 
+        if(t) t.textContent=this.wardrobe.length; 
+    }
 };
 
 window.app = app;
