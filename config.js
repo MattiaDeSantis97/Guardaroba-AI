@@ -13,7 +13,7 @@
 
 const CONFIG = {
     // INCOLLA QUI LA TUA CHIAVE (Non lasciarla vuota)
-    GEMINI_API_KEY: 'AIzaSyDbRafEjXwJM10u3pkRdO_SDWy69bcCFvY', 
+    GEMINI_API_KEY: 'AIzaSyBB4DF6UbzvP_-6Pqa3yrILJLKcVLSo0dM', 
     
     // MODIFICA: Usiamo 'gemini-pro' che è il modello standard e funziona sempre
     GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
