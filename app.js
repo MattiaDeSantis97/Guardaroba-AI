@@ -56,25 +56,25 @@ const app = {
     },
 
     async callGeminiAPI(prompt) {
-        // --- QUI C'ERA IL PROBLEMA: ORA USIAMO IL MODELLO CHE HAI TROVATO TU ---
-        // Usiamo esattamente 'gemini-2.5-flash' come confermato dal tuo test
-        const modelName = 'gemini-2.5-flash'; 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${this.apiKey}`;
+        // Usiamo il percorso relativo. Vercel capirà automaticamente che deve chiamare il file nella cartella /api
+        const proxyUrl = '/api/proxy'; 
         
-        console.log(`Chiamata a: ${modelName}`);
+        console.log('Chiamata sicura via Vercel...');
 
-        const response = await fetch(url, {
+        const response = await fetch(proxyUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            body: JSON.stringify({ prompt: prompt })
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error?.message || 'Errore Google API');
+            throw new Error(data.error?.message || 'Errore Server Vercel');
         }
 
+        // Se la chiamata fallisce lato server o non ci sono candidati
+        if (data.error) throw new Error(data.error);
         if (!data.candidates || !data.candidates[0].content) throw new Error('Nessuna risposta generata');
 
         const text = data.candidates[0].content.parts[0].text;
