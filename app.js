@@ -24,11 +24,6 @@ const app = {
         if (!this.apiKey && typeof CONFIG !== 'undefined') {
             this.apiKey = CONFIG.GEMINI_API_KEY.trim().replace(/['"]/g, '');
         }
-
-        if (!this.apiKey) {
-            alert('Errore: API Key mancante in config.js');
-            return;
-        }
         
         const resultDiv = document.getElementById('outfitResult');
         if (resultDiv) resultDiv.innerHTML = '<div class="loading">⏳ Generazione outfit con Gemini 2.5...</div>';
@@ -49,10 +44,8 @@ const app = {
     },
 
     async callGeminiAPI(prompt) {
-        const modelName = 'gemini-2.5-flash'; 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${this.apiKey}`;
-        
-        const response = await fetch(url, {
+        // Chiamata alla Serverless Function di Vercel
+        const response = await fetch('/api/outfit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -61,10 +54,12 @@ const app = {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error?.message || 'Errore Google API');
+            throw new Error(data.error || 'Errore Serverless Function');
         }
 
-        if (!data.candidates || !data.candidates[0].content) throw new Error('Nessuna risposta generata');
+        if (!data.candidates || !data.candidates[0].content) {
+            throw new Error('Nessuna risposta generata dall\'AI');
+        }
 
         const text = data.candidates[0].content.parts[0].text;
         const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
