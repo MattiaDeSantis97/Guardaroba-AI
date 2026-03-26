@@ -389,3 +389,39 @@ footer {
 #apiSetup {
     display: none !important;
 }
+
+/* --- BACKGROUND SCHEDE PRINCIPALI --- */
+
+/* Tab Guardaroba */
+#wardrobeTab {
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center;
+    background-size: cover;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+}
+
+/* Tab Crea Outfit */
+#outfitTab {
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center;
+    background-size: cover;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+}
+
+/* Tab Statistiche */
+#statsTab {
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center;
+    background-size: cover;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+}
+
+/* Ottimizzazione dei bordi interni per le tab con background */
+#wardrobeTab > div, #outfitTab > div, #statsTab > div {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
