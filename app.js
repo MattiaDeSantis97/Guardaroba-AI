@@ -73,6 +73,26 @@ const app = {
         })); 
     },
 
+    showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerText = message;
+
+        container.appendChild(toast);
+
+        // Forza un reflow per innescare l'animazione CSS
+        setTimeout(() => toast.classList.add('show'), 10);
+
+        // Rimuove il toast dopo 3 secondi
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400); // Attende la fine dell'animazione
+        }, 3000);
+    },
+
     switchTab(t) { 
         document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); 
         if (event && event.target) {
@@ -137,15 +157,17 @@ const app = {
         document.getElementById('addItemForm').reset();
         
         const preview = document.getElementById('imagePreview');
-        if (preview) { preview.style.display = 'none'; preview.src = ''; }
+        // Rimuovi alert('Aggiunto!'); se presente e inserisci:
+        this.showToast('Capo aggiunto con successo!', 'success');
     },
 
     deleteItem(id) { 
-        if (confirm('Eliminare?')) {
+        if (confirm('Sei sicuro di voler eliminare questo capo?')) {
             this.wardrobe = this.wardrobe.filter(i => i.id !== id);
             this.saveWardrobe();
             this.displayWardrobe();
             this.updateStats();
+            this.showToast('Capo eliminato dal guardaroba.', 'success');
         } 
     },
 
