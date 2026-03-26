@@ -44,21 +44,22 @@ const app = {
     },
 
     async callGeminiAPI(prompt) {
-        // Chiamata alla Serverless Function di Vercel
-        const response = await fetch('/outfit', {
+        // Punta al file proxy.js trovato nella repository
+        const response = await fetch('/api/proxy', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            // Invia solo la variabile prompt come richiesto dal proxy
+            body: JSON.stringify({ prompt: prompt }) 
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || 'Errore Serverless Function');
+            throw new Error(data.error || 'Errore dal proxy Vercel');
         }
 
         if (!data.candidates || !data.candidates[0].content) {
-            throw new Error('Nessuna risposta generata dall\'AI');
+            throw new Error("Nessuna risposta generata dall'AI");
         }
 
         const text = data.candidates[0].content.parts[0].text;
