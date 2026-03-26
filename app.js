@@ -45,7 +45,7 @@ const app = {
 
     async callGeminiAPI(prompt) {
         // Chiamata alla Serverless Function di Vercel
-        const response = await fetch('/api/outfit', {
+        const response = await fetch('/outfit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
